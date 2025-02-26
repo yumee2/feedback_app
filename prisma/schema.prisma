@@ -9,7 +9,60 @@ datasource db {
 
 model User {
     id  Int @id @default(autoincrement())
-    email String @unique @db.VarChar(50)
+    email String @unique @db.VarChar(100)
     password String
     avatar String
+    boards Board[]
+    feedback_posts FeedbackPost[]
+    upvotes Upvote[]
+}
+
+model Board {
+    id  Int @id @default(autoincrement())
+    title String @unique @db.VarChar(100)
+    description String @db.Text
+    user_id Int
+    feedback_posts FeedbackPost[]
+
+    user User @relation(fields: [user_id], references: [id])
+}
+
+model FeedbackPost {
+    id  Int @id @default(autoincrement())
+    title String @unique @db.VarChar(100)
+    description String @db.Text
+    status  Status
+    category  Category
+    author_id Int
+    board_id Int
+    upvotes Upvote[] 
+
+    author User @relation(fields: [author_id], references: [id])
+    board Board @relation(fields: [board_id], references: [id])
+}
+
+model Upvote {
+  id                Int            @id @default(autoincrement())
+  user_id           Int
+  feedback_post_id  Int
+
+  user User @relation(fields: [user_id], references: [id])
+  feedback_post FeedbackPost @relation(fields: [feedback_post_id], references: [id])
+
+  @@unique([user_id, feedback_post_id])
+}
+
+
+enum Category {
+  BUG
+  FUNCTIONALITY
+  UI
+  PERFORMANCE
+}
+
+enum Status {
+  IDEA
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
 }
