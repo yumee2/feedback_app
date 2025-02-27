@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 model User {
@@ -42,9 +42,9 @@ model FeedbackPost {
 }
 
 model Upvote {
-  id                Int            @id @default(autoincrement())
-  user_id           Int
-  feedback_post_id  Int
+  id Int @id @default(autoincrement())
+  user_id Int
+  feedback_post_id Int
 
   user User @relation(fields: [user_id], references: [id])
   feedback_post FeedbackPost @relation(fields: [feedback_post_id], references: [id])
