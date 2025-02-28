@@ -5,7 +5,7 @@ import UserDto from "./dto/user.dto";
 
 const prisma = new PrismaClient()
 
-async function getUserByEmail(email: string) {
+export async function getUserByEmail(email: string) { //TODO add return type
     const user = await prisma.user.findUnique({
         where: {
             email: email
@@ -19,7 +19,7 @@ async function getUserByEmail(email: string) {
     return user;
 }
 
-async function createUser(userDto: CreateUserDto): Promise<UserDto> {
+export async function createUser(userDto: CreateUserDto): Promise<UserDto> {
     const user = await prisma.user.create({
         data: {
           email: userDto.email,
@@ -34,5 +34,3 @@ async function createUser(userDto: CreateUserDto): Promise<UserDto> {
       })
     return user;
 }
-
-export {getUserByEmail, createUser};

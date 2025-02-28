@@ -3,15 +3,15 @@ import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken'
 
 import CreateUserDto from "./dto/create-user.dto";
-import { createUser, getUserByEmail } from "./user.repository";
+import * as userRepositoryfrom from "./user.repository";
 import UserWithToken from './dto/user-with-token.dto';
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
 
-async function registerUser(createUserData: CreateUserDto): Promise<UserWithToken> {
-    const user = await getUserByEmail(createUserData.email);
+export async function registerUser(createUserData: CreateUserDto): Promise<UserWithToken> {
+    const user = await userRepositoryfrom.getUserByEmail(createUserData.email);
     if(user) {
         throw new Error('User with provided email already exists');
     }
@@ -19,7 +19,7 @@ async function registerUser(createUserData: CreateUserDto): Promise<UserWithToke
     const hashPassword = await bcrypt.hash(createUserData.password, 5);
     createUserData.password = hashPassword;
 
-    const newUser = await createUser(createUserData);
+    const newUser = await userRepositoryfrom.createUser(createUserData);
     const token = jwt.sign({ id: newUser.id}, JWT_SECRET, { expiresIn: "1m" });
     const returnUser = {
         id: newUser.id,
@@ -33,8 +33,8 @@ async function registerUser(createUserData: CreateUserDto): Promise<UserWithToke
     return {user: returnUser, token: token, token_type: "bearer"};
 }
 
-async function loginUser(loginUserData: CreateUserDto): Promise<UserWithToken> {
-    const user = await getUserByEmail(loginUserData.email);
+export async function loginUser(loginUserData: CreateUserDto): Promise<UserWithToken> {
+    const user = await userRepositoryfrom.getUserByEmail(loginUserData.email);
     if(!user) {
         throw new Error('User with provided email not found');
     }
@@ -56,5 +56,3 @@ async function loginUser(loginUserData: CreateUserDto): Promise<UserWithToken> {
 
     return {user: returnUser, token: token, token_type: "bearer"};
 }
-
-export {registerUser, loginUser};
