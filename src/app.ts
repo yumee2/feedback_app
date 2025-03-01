@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import {default as userRouter} from  './users/user.router';
 import {default as boardsRouter} from  './boards/boards.router';
 import {default as feedbackRouter} from  './feedback-posts/feedback-posts.router';
+import {default as upvotesRouter} from  './upvotes/upvotes.router';
+
 
 import path from "path";
 
@@ -18,7 +20,7 @@ app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
 app.use('/feedback', feedbackRouter);
-
+app.use('/upvote', upvotesRouter);
 
 
 app.listen(port, () => {
