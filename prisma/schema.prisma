@@ -37,6 +37,9 @@ model FeedbackPost {
     board_id Int
     upvotes Upvote[] 
 
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt     
+
     author User @relation(fields: [author_id], references: [id])
     board Board @relation(fields: [board_id], references: [id])
 }

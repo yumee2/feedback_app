@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import dotenv from 'dotenv';
 import {default as userRouter} from  './users/user.router';
 import {default as boardsRouter} from  './boards/boards.router';
+import {default as feedbackRouter} from  './feedback-posts/feedback-posts.router';
 
 import path from "path";
 
@@ -16,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
+app.use('/feedback', feedbackRouter);
+
 
 
 app.listen(port, () => {
