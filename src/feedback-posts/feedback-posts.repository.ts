@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import CreateFeedbackPostDto from "./dto/create-feedback.dto";
 import UpdateFeedbackPostDto from "./dto/update-feedback.dto";
+import { Status } from "./enums/status.enum";
+import { Category } from "./enums/category.enum";
 
 const prisma = new PrismaClient()
 
@@ -44,10 +46,12 @@ export async function getFeedbackPostById(feedbackId: number) {
   return feedback;
 }
 
-export async function getFeedbackPostByBoardId(boardId: number) {
+export async function getFeedbackPostByBoardId(boardId: number, status?: Status, category?: Category) {
   const feedback = await prisma.feedbackPost.findMany({
     where: {
-      board_id: boardId
+      board_id: boardId,
+      status: status,
+      category: category
     },
   })
   return feedback;

@@ -27,8 +27,21 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
     const boardId = parseInt(id, 10);
 
+    const status = req.query.status as string | undefined;
+    const category = req.query.category as string | undefined;
+
+    if (status && !Object.values(Status).includes(status as Status)) {
+        res.status(400).send(`Invalid status. Allowed values: ${Object.values(Status).join(', ')}`);
+        return;
+    }
+
+    if (category && !Object.values(Category).includes(category as Category)) {
+        res.status(400).send(`Invalid category. Allowed values: ${Object.values(Category).join(', ')}`);
+        return;
+    }
+
     try {
-        const feedbacks = await feedbackService.getFeedbackPostByBoardId(boardId);
+        const feedbacks = await feedbackService.getFeedbackPostByBoardId(boardId, (status as Status), (category as Category));
         res.status(200).send(feedbacks);
     } catch(e: any) {
         console.log(e.message);

@@ -1,5 +1,7 @@
 import CreateFeedbackPostDto from "./dto/create-feedback.dto";
 import UpdateFeedbackPostDto from "./dto/update-feedback.dto";
+import { Category } from "./enums/category.enum";
+import { Status } from "./enums/status.enum";
 import * as feedbackRepository from './feedback-posts.repository';
 
 export async function createFeedbackPost(createFeedbackPostDto: CreateFeedbackPostDto) {
@@ -22,7 +24,7 @@ export async function getFeedbackPostById(feedbackId: number) {
     return feedback;
 }
 
-export async function getFeedbackPostByBoardId(boardId: number) {
-    const feedbacks = await feedbackRepository.getFeedbackPostByBoardId(boardId);
+export async function getFeedbackPostByBoardId(boardId: number, status?: Status,  category?: Category) {
+    const feedbacks = await feedbackRepository.getFeedbackPostByBoardId(boardId, status, category);
     return feedbacks;
 }
