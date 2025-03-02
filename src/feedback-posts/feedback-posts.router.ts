@@ -1,5 +1,7 @@
 import express, {Request, Response} from 'express';
 import * as feedbackService from './feedback-posts.service';
+import { Category } from './enums/category.enum';
+import { Status } from './enums/status.enum';
 
 const router = express.Router();
 
@@ -32,6 +34,14 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
         console.log(e.message);
         res.status(500).send(`Error trying to get a feedback posts by board id: ${boardId}`);
     } 
+});
+
+router.get("/category", async (req: Request, res: Response) => {
+    res.status(200).send(Object.keys(Category));
+});
+
+router.get("/status", async (req: Request, res: Response) => {
+    res.status(200).send(Object.keys(Status));
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
