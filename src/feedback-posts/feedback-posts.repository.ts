@@ -46,13 +46,27 @@ export async function getFeedbackPostById(feedbackId: number) {
   return feedback;
 }
 
-export async function getFeedbackPostByBoardId(boardId: number, status?: Status, category?: Category) {
+export async function getFeedbackPostByBoardId(boardId: number, status?: Status, category?: Category, sort?: 'asc' | 'desc', sortByUpvotes?: 'asc' | 'desc') {
+  const orderBy: any[] = [];
+  
+  if (sortByUpvotes) {
+    orderBy.push({ upvotes: { _count: sortByUpvotes } });
+  }
+  
+  if (sort) {
+    orderBy.push({ created_at: sort });
+  }
+  
   const feedback = await prisma.feedbackPost.findMany({
     where: {
       board_id: boardId,
       status: status,
       category: category
     },
+    orderBy,
+    include: {
+      upvotes: true
+    }
   })
   return feedback;
 }
