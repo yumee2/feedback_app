@@ -46,7 +46,8 @@ export async function getFeedbackPostById(feedbackId: number) {
   return feedback;
 }
 
-export async function getFeedbackPostByBoardId(boardId: number, status?: Status, category?: Category, sort?: 'asc' | 'desc', sortByUpvotes?: 'asc' | 'desc') {
+export async function getFeedbackPostByBoardId(boardId: number,take: number, skip: number, status?: Status, category?: Category, sort?: 'asc' | 'desc', 
+                                              sortByUpvotes?: 'asc' | 'desc') {
   const orderBy: any[] = [];
   
   if (sortByUpvotes) {
@@ -66,7 +67,9 @@ export async function getFeedbackPostByBoardId(boardId: number, status?: Status,
     orderBy,
     include: {
       upvotes: true
-    }
+    },
+    take: take,
+    skip: skip
   })
   return feedback;
 }

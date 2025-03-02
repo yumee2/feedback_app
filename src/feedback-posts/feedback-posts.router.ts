@@ -31,7 +31,8 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
     const category = req.query.category as string | undefined;
     const sort = req.query.sort as 'asc' | 'desc' | undefined;
     const sortByUpvotes = req.query.sortByUpvotes as 'asc' | 'desc' | undefined;
-
+    const take = Number(req.query.take) || 10;
+    const skip = Number(req.query.skip) || 0;
 
     if (status && !Object.values(Status).includes(status as Status)) {
         res.status(400).send(`Invalid status. Allowed values: ${Object.values(Status).join(', ')}`);
@@ -44,7 +45,7 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const feedbacks = await feedbackService.getFeedbackPostByBoardId(boardId, (status as Status), (category as Category), sort, sortByUpvotes);
+        const feedbacks = await feedbackService.getFeedbackPostByBoardId(boardId, take, skip, (status as Status), (category as Category), sort, sortByUpvotes);
         res.status(200).send(feedbacks);
     } catch(e: any) {
         console.log(e.message);

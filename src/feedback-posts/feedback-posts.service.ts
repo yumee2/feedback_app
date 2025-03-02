@@ -24,7 +24,7 @@ export async function getFeedbackPostById(feedbackId: number) {
     return feedback;
 }
 
-export async function getFeedbackPostByBoardId(boardId: number, status?: Status,  category?: Category, sort?: 'asc' | 'desc', sortByUpvotes?: 'asc' | 'desc') {
-    const feedbacks = await feedbackRepository.getFeedbackPostByBoardId(boardId, status, category, sort, sortByUpvotes);
+export async function getFeedbackPostByBoardId(boardId: number, take: number, skip: number, status?: Status,  category?: Category, sort?: 'asc' | 'desc', sortByUpvotes?: 'asc' | 'desc') {
+    const feedbacks = await feedbackRepository.getFeedbackPostByBoardId(boardId, take, skip, status, category, sort, sortByUpvotes);
     return feedbacks;
 }
