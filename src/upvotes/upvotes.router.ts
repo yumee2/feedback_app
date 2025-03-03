@@ -1,5 +1,6 @@
 import express, {Request, Response} from 'express';
 import * as upvoteService from './upvotes.service';
+import { authenticateToken } from '../shared/middlewares/auth.middleware';
 
 /**
  * @swagger
@@ -46,9 +47,10 @@ const router = express.Router();
  *                   type: integer
  *                   example: 2001
  */
-router.post('/users/:userId/feedback/:feedbackId', async (req: Request, res: Response) => {
-    const {userId, feedbackId} = req.params;
-    
+router.post('/users/:userId/feedback/:feedbackId', authenticateToken, async (req: Request & {user?: any}, res: Response) => {
+    const {feedbackId} = req.params;
+    const userId = req.user.id;
+
     try {
         const upvote = await upvoteService.upvotePost({userId: Number(userId), feedbackPostId: Number(feedbackId)});
         res.status(200).send(upvote);
