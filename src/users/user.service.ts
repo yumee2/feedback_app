@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken'
 
 import CreateUserDto from "./dto/create-user.dto";
-import * as userRepositoryfrom from "./user.repository";
+import * as userRepository from "./user.repository";
 import UserWithToken from './dto/user-with-token.dto';
 
 dotenv.config();
@@ -11,7 +11,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || '';
 
 export async function registerUser(createUserData: CreateUserDto): Promise<UserWithToken> {
-    const user = await userRepositoryfrom.getUserByEmail(createUserData.email);
+    const user = await userRepository.getUserByEmail(createUserData.email);
     if(user) {
         throw new Error('User with provided email already exists');
     }
@@ -19,7 +19,7 @@ export async function registerUser(createUserData: CreateUserDto): Promise<UserW
     const hashPassword = await bcrypt.hash(createUserData.password, 5);
     createUserData.password = hashPassword;
 
-    const newUser = await userRepositoryfrom.createUser(createUserData);
+    const newUser = await userRepository.createUser(createUserData);
     const token = jwt.sign({ id: newUser.id}, JWT_SECRET, { expiresIn: "30d" });
     const returnUser = {
         id: newUser.id,
@@ -34,7 +34,7 @@ export async function registerUser(createUserData: CreateUserDto): Promise<UserW
 }
 
 export async function loginUser(loginUserData: CreateUserDto): Promise<UserWithToken> {
-    const user = await userRepositoryfrom.getUserByEmail(loginUserData.email);
+    const user = await userRepository.getUserByEmail(loginUserData.email);
     if(!user) {
         throw new Error('User with provided email not found');
     }
@@ -55,4 +55,9 @@ export async function loginUser(loginUserData: CreateUserDto): Promise<UserWithT
     };
 
     return {user: returnUser, token: token, token_type: "bearer"};
+}
+
+export async function getUser(userId:number) {
+    const user = await userRepository.getUser(userId);
+    return user;
 }

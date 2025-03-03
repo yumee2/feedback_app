@@ -34,4 +34,15 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 }); 
 
+router.get('/:id', async (req: Request, res: Response) => {
+    const id = req.params.id;
+    try {
+        const user = await userService.getUser(Number(id));
+        res.status(200).send(user);
+    } catch(e: any) {
+        console.log(e.message);
+        res.send(500).send({error: "Error trying to get a user by his ID"});
+    }
+
+})
 export default router;
