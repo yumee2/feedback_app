@@ -1,9 +1,17 @@
-import express, {Request, Response} from 'express';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import express from 'express';
 import * as feedbackService from './feedback-posts.service';
 import { Category } from './enums/category.enum';
 import { Status } from './enums/status.enum';
 import { authenticateToken } from '../shared/middlewares/auth.middleware';
-
 /**
  * @swagger
  * tags:
@@ -14,7 +22,7 @@ import { authenticateToken } from '../shared/middlewares/auth.middleware';
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
- *   
+ *
  *   schemas:
  *     Category:
  *       type: string
@@ -25,9 +33,7 @@ import { authenticateToken } from '../shared/middlewares/auth.middleware';
  *       enum: [IDEA, PLANNED, IN_PROGRESS, COMPLETED]
  *       description: "Statuses for feedback posts."
  */
-
 const router = express.Router();
-
 /**
  * @swagger
  * /feedback:
@@ -81,24 +87,22 @@ const router = express.Router();
  *                   type: integer
  *                   example: 1
  */
-
-router.post("/", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
-    const {title, description, status, category, board_id} = req.body;
+router.post("/", authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description, status, category, board_id } = req.body;
     const author_id = req.user.id;
-
-    if(!title || !description || !status || !category || !author_id || !board_id) {
-        res.status(422).send({error: 'Provide the right data model!'});
+    if (!title || !description || !status || !category || !author_id || !board_id) {
+        res.status(422).send({ error: 'Provide the right data model!' });
         return;
     }
-
     try {
-        const feedback = await feedbackService.createFeedbackPost({title, description, status, category, author_id, board_id, updated_at: new Date()});
+        const feedback = yield feedbackService.createFeedbackPost({ title, description, status, category, author_id, board_id, updated_at: new Date() });
         res.status(200).send(feedback);
-    } catch(e: any) {
+    }
+    catch (e) {
         console.log(e.message);
         res.status(500).send("Error trying to create a feedback post");
-    } 
-}); 
+    }
+}));
 /**
  * @swagger
  * /feedback/boards/{id}:
@@ -153,35 +157,32 @@ router.post("/", authenticateToken, async (req: Request & {user?: any}, res: Res
  *                     type: integer
  *                     example: 1
  */
-router.get("/boards/:id", async (req: Request, res: Response) => {
+router.get("/boards/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const boardId = parseInt(id, 10);
-
-    const status = req.query.status as string | undefined;
-    const category = req.query.category as string | undefined;
-    const sort = req.query.sort as 'asc' | 'desc' | undefined;
-    const sortByUpvotes = req.query.sortByUpvotes as 'asc' | 'desc' | undefined;
+    const status = req.query.status;
+    const category = req.query.category;
+    const sort = req.query.sort;
+    const sortByUpvotes = req.query.sortByUpvotes;
     const take = Number(req.query.take) || 10;
     const skip = Number(req.query.skip) || 0;
-
-    if (status && !Object.values(Status).includes(status as Status)) {
+    if (status && !Object.values(Status).includes(status)) {
         res.status(400).send(`Invalid status. Allowed values: ${Object.values(Status).join(', ')}`);
         return;
     }
-
-    if (category && !Object.values(Category).includes(category as Category)) {
+    if (category && !Object.values(Category).includes(category)) {
         res.status(400).send(`Invalid category. Allowed values: ${Object.values(Category).join(', ')}`);
         return;
     }
-
     try {
-        const feedbacks = await feedbackService.getFeedbackPostByBoardId(boardId, take, skip, (status as Status), (category as Category), sort, sortByUpvotes);
+        const feedbacks = yield feedbackService.getFeedbackPostByBoardId(boardId, take, skip, status, category, sort, sortByUpvotes);
         res.status(200).send(feedbacks);
-    } catch(e: any) {
+    }
+    catch (e) {
         console.log(e.message);
         res.status(500).send(`Error trying to get a feedback posts by board id: ${boardId}`);
-    } 
-});
+    }
+}));
 /**
  * @swagger
  * /feedback/category:
@@ -199,11 +200,9 @@ router.get("/boards/:id", async (req: Request, res: Response) => {
  *               items:
  *                 $ref: '#/components/schemas/Category'
  */
-
-router.get("/category", async (req: Request, res: Response) => {
+router.get("/category", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).send(Object.keys(Category));
-});
-
+}));
 /**
  * @swagger
  * /feedback/status:
@@ -221,9 +220,9 @@ router.get("/category", async (req: Request, res: Response) => {
  *               items:
  *                 $ref: '#/components/schemas/Status'
  */
-router.get("/status", async (req: Request, res: Response) => {
+router.get("/status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).send(Object.keys(Status));
-});
+}));
 /**
  * @swagger
  * /feedback/{id}:
@@ -261,19 +260,18 @@ router.get("/status", async (req: Request, res: Response) => {
  *                 category:
  *                  $ref: '#/components/schemas/Category'
  */
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const feedbackId = parseInt(id, 10);
-
     try {
-        const feedback = await feedbackService.getFeedbackPostById(feedbackId);
+        const feedback = yield feedbackService.getFeedbackPostById(feedbackId);
         res.status(200).send(feedback);
-    } catch(e: any) {
+    }
+    catch (e) {
         console.log(e.message);
         res.status(500).send(`Error trying to get a feedback post by id: ${feedbackId}`);
-    } 
-
-});
+    }
+}));
 /**
  * @swagger
  * /feedback/{id}:
@@ -294,20 +292,20 @@ router.get("/:id", async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully deleted the feedback post.
- */ 
-router.delete("/:id", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
+ */
+router.delete("/:id", authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const user_id = req.user.id;
     const feedbackId = parseInt(id, 10);
-
     try {
-        const deletedFeedback = await feedbackService.deleteFeedbackPost(feedbackId, user_id);
+        const deletedFeedback = yield feedbackService.deleteFeedbackPost(feedbackId, user_id);
         res.status(200).send(deletedFeedback);
-    } catch(e: any) {
+    }
+    catch (e) {
         console.log(e.message);
         res.status(500).send("Error trying to delete a feedback post");
-    } 
-});
+    }
+}));
 /**
  *@swagger
 * /feedback/{id}:
@@ -341,7 +339,7 @@ router.delete("/:id", authenticateToken, async (req: Request & {user?: any}, res
 *               status:
 *                 $ref: '#/components/schemas/Status'
 *               category:
-*                 $ref: '#/components/schemas/Category' 
+*                 $ref: '#/components/schemas/Category'
 *     responses:
 *       200:
 *         description: Successfully updated the feedback post.
@@ -360,20 +358,18 @@ router.delete("/:id", authenticateToken, async (req: Request & {user?: any}, res
 *                   type: string
 *                   example: "Updated description of the feedback post."
 */
-router.put("/:id", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
-    const {title, description, status, category} = req.body;
+router.put("/:id", authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description, status, category } = req.body;
     const id = req.params.id;
     const userId = req.user.id;
-
     const feedbackId = parseInt(id, 10);
-
     try {
-        const updatedFeedback = await feedbackService.updateFeedbackPost(feedbackId, {title, description, status, category, updated_at: new Date()}, userId);
+        const updatedFeedback = yield feedbackService.updateFeedbackPost(feedbackId, { title, description, status, category, updated_at: new Date() }, userId);
         res.status(200).send(updatedFeedback);
-    } catch(e: any) {
+    }
+    catch (e) {
         console.log(e.message);
         res.status(500).send("Error trying to update a feedback post");
-    } 
-});
-
+    }
+}));
 export default router;
