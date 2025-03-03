@@ -9,14 +9,29 @@ export async function createFeedbackPost(createFeedbackPostDto: CreateFeedbackPo
     return feedback;
 }
 
-export async function updateFeedbackPost(feedbackId: number, updateFeedbackPostDto: UpdateFeedbackPostDto) {
-    const feedback = await feedbackRepository.updateFeedbackPost(feedbackId, updateFeedbackPostDto);
-    return feedback;
+export async function updateFeedbackPost(feedbackId: number, updateFeedbackPostDto: UpdateFeedbackPostDto, userId: number) {
+    const feedback = await getFeedbackPostById(feedbackId);
+    const board = feedback?.board;
+    
+    if(userId == feedback?.author_id || userId == board?.user_id){
+        const updatedFeedback = await feedbackRepository.updateFeedbackPost(feedbackId, updateFeedbackPostDto);
+        return updatedFeedback;
+    } else {
+        throw new Error("You have no right to perform this action");
+    }
 }
 
-export async function deleteFeedbackPost(feedbackId: number) {
-    const deletedFeedback = await feedbackRepository.deleteFeedbackPost(feedbackId);
-    return deletedFeedback;
+export async function deleteFeedbackPost(feedbackId: number, userId: number) {
+    
+    const feedback = await getFeedbackPostById(feedbackId);
+    const board = feedback?.board;
+    console.log(userId, feedback?.author_id, board?.user_id);
+    if(userId == feedback?.author_id || userId == board?.user_id){
+        const deletedFeedback = await feedbackRepository.deleteFeedbackPost(feedbackId);
+        return deletedFeedback;
+    } else {
+        throw new Error("You have no right to perform this action");
+    }
 }
 
 export async function getFeedbackPostById(feedbackId: number) {

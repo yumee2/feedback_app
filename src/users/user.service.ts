@@ -20,7 +20,7 @@ export async function registerUser(createUserData: CreateUserDto): Promise<UserW
     createUserData.password = hashPassword;
 
     const newUser = await userRepositoryfrom.createUser(createUserData);
-    const token = jwt.sign({ id: newUser.id}, JWT_SECRET, { expiresIn: "1m" });
+    const token = jwt.sign({ id: newUser.id}, JWT_SECRET, { expiresIn: "30d" });
     const returnUser = {
         id: newUser.id,
         email: newUser.email,
@@ -44,7 +44,7 @@ export async function loginUser(loginUserData: CreateUserDto): Promise<UserWithT
         throw new Error('Password is not matching');
     }
 
-    const token = jwt.sign({ id: user.id}, JWT_SECRET, { expiresIn: "1m" });
+    const token = jwt.sign({ id: user.id}, JWT_SECRET, { expiresIn: "30d" });
     const returnUser = {
         id: user.id,
         email: user.email,

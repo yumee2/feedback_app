@@ -2,12 +2,13 @@ import express, {Request, Response} from 'express';
 import * as feedbackService from './feedback-posts.service';
 import { Category } from './enums/category.enum';
 import { Status } from './enums/status.enum';
+import { authenticateToken } from '../shared/middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
-    console.log(req.body);
-    const {title, description, status, category, author_id, board_id} = req.body;
+router.post("/", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
+    const {title, description, status, category, board_id} = req.body;
+    const author_id = req.user.id;
 
     if(!title || !description || !status || !category || !author_id || !board_id) {
         res.status(422).send({error: 'Provide the right data model!'});
@@ -21,7 +22,7 @@ router.post("/", async (req: Request, res: Response) => {
         console.log(e.message);
         res.status(500).send("Error trying to create a feedback post");
     } 
-});
+}); 
 
 router.get("/boards/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -75,26 +76,29 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 });
 
-router.delete("/:id" , async (req: Request, res: Response) => {
+router.delete("/:id", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
     const id = req.params.id;
+    const user_id = req.user.id;
     const feedbackId = parseInt(id, 10);
 
     try {
-        const deletedFeedback = await feedbackService.deleteFeedbackPost(feedbackId);
+        const deletedFeedback = await feedbackService.deleteFeedbackPost(feedbackId, user_id);
         res.status(200).send(deletedFeedback);
     } catch(e: any) {
         console.log(e.message);
-        res.status(500).send("Error trying to delete  a feedback post");
+        res.status(500).send("Error trying to delete a feedback post");
     } 
 });
 
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", authenticateToken, async (req: Request & {user?: any}, res: Response) => {
     const {title, description, status, category} = req.body;
     const id = req.params.id;
+    const userId = req.user.id;
+
     const feedbackId = parseInt(id, 10);
 
     try {
-        const updatedFeedback = await feedbackService.updateFeedbackPost(feedbackId, {title, description, status, category, updated_at: new Date()});
+        const updatedFeedback = await feedbackService.updateFeedbackPost(feedbackId, {title, description, status, category, updated_at: new Date()}, userId);
         res.status(200).send(updatedFeedback);
     } catch(e: any) {
         console.log(e.message);

@@ -41,6 +41,9 @@ export async function getFeedbackPostById(feedbackId: number) {
   const feedback = await prisma.feedbackPost.findUnique({
     where: {
       id: feedbackId
+    },
+    include: {
+      board: true
     }
   })
   return feedback;
