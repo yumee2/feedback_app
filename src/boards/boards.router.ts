@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import * as boardService from './boards.service';
+import { authenticateToken } from '../shared/middlewares/auth.middleware';
 const router = express.Router();
 
-router.post('/', async (req: Request, res: Response) => {
-    const { title, description, user_id } = req.body;
+router.post('/', authenticateToken, async (req: Request & {user?: any}, res: Response) => {
+    const { title, description } = req.body;
+    const user_id = req.user.id;
 
     if (!title || !description || !user_id) {
         res.status(422).send({error: 'Provide the right data model'});
