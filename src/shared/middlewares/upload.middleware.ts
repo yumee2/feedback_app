@@ -1,14 +1,15 @@
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
+import { mkdir } from 'fs/promises';
 
 const uploadDir = path.join(__dirname, '../../../public/uploads');
 
-if (!fs.existsSync(uploadDir)) { // TODO: change the sync
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+(async () => {try {
+    await mkdir(uploadDir, { recursive: true });
+} catch (err) {
+    console.error('Error creating upload directory:', err);
+}})() // Проверям существует ли директория и если нет, мы ее создаем
 
-// Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir); 
