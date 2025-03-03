@@ -1,9 +1,51 @@
 import express, {Request, Response} from 'express';
 import * as upvoteService from './upvotes.service';
 
-
+/**
+ * @swagger
+ * tags:
+ *   - name: Upvotes
+ */
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * /upvote/users/{userId}/feedback/{feedbackId}:
+ *   post:
+ *     summary: Upvote a feedback post
+ *     description: Allows a user to upvote a feedback post by providing user and feedback post IDs.
+ *     tags: [Upvotes]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: The ID of the user who is upvoting the post.
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: path
+ *         name: feedbackId
+ *         required: true
+ *         description: The ID of the feedback post being upvoted.
+ *         schema:
+ *           type: integer
+ *           example: 101
+ *     responses:
+ *       200:
+ *         description: Successfully upvoted the feedback post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Upvote successful"
+ *                 upvoteId:
+ *                   type: integer
+ *                   example: 2001
+ */
 router.post('/users/:userId/feedback/:feedbackId', async (req: Request, res: Response) => {
     const {userId, feedbackId} = req.params;
     
