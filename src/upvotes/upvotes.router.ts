@@ -6,25 +6,26 @@ import { authenticateToken } from '../shared/middlewares/auth.middleware';
  * @swagger
  * tags:
  *   - name: Upvotes
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 const router = express.Router();
 
 
 /**
  * @swagger
- * /upvote/users/{userId}/feedback/{feedbackId}:
+ * /upvote/feedback/{feedbackId}:
  *   post:
  *     summary: Upvote a feedback post
  *     description: Allows a user to upvote a feedback post by providing user and feedback post IDs.
  *     tags: [Upvotes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         description: The ID of the user who is upvoting the post.
- *         schema:
- *           type: integer
- *           example: 1
  *       - in: path
  *         name: feedbackId
  *         required: true
@@ -47,7 +48,7 @@ const router = express.Router();
  *                   type: integer
  *                   example: 2001
  */
-router.post('/users/:userId/feedback/:feedbackId', authenticateToken, async (req: Request & {user?: any}, res: Response) => {
+router.post('/feedback/:feedbackId', authenticateToken, async (req: Request & {user?: any}, res: Response) => {
     const {feedbackId} = req.params;
     const userId = req.user.id;
 
